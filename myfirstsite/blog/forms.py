@@ -41,7 +41,3 @@ class UserLoginForm(AuthenticationForm):
     password = forms.CharField(label='Пароль', widget=forms.PasswordInput(attrs={'class': 'form-input'}))
 
 
-class CreateNewCommentForm(forms.ModelForm):
-    class Meta:
-        model = Comments
-        fields = ('text',)

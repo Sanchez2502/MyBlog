@@ -10,4 +10,7 @@ urlpatterns = [
     path('register/', RegisterUser.as_view(), name='register'),
     path('article/<slug:article_slug>/', ShowArticle.as_view(), name='article'),
     path('category/<slug:category_slug>/', PuzzleCategory.as_view(), name='category'),
+    path('like/<int:pk>/', AddLike.as_view(), name='like'),
+    path('like/<int:pk>/article/<slug:article_slug>/', ShowArticle.as_view(), name='new_like'),
+
 ]
