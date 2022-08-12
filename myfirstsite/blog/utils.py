@@ -4,8 +4,6 @@ from .models import *
 
 menu = [{'title': "Головна", 'url_name': 'home'},
         {'title': "Додати нову статтю", 'url_name': 'add_article'},
-        # {'title': "Зворотній зв'язок", 'url_name': 'contact'},
-
         ]
 
 
