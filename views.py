@@ -1,5 +1,6 @@
 from django.contrib.auth import logout, login
 from django.contrib.auth.views import LoginView
+from django.http import HttpResponseNotFound
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views import View
@@ -24,7 +25,6 @@ class Home(DataMixin, ListView):
         return Puzzle.objects.filter(is_published=True)
 
 
-
 class AddPage(LoginRequiredMixin, DataMixin, CreateView):
     form_class = CreateNewArticleForm
     template_name = 'blog/addarticle.html'
@@ -38,8 +38,6 @@ class AddPage(LoginRequiredMixin, DataMixin, CreateView):
         return dict(list(context.items()) + list(c_def.items()))
 
 
-
-
 class ShowArticle(DataMixin, DetailView):
     model = Puzzle
     template_name = 'blog/article.html'
@@ -50,6 +48,7 @@ class ShowArticle(DataMixin, DetailView):
         context = super().get_context_data(**kwargs)
         count_of_likes = {'count_of_likes': Likes.objects.filter(puzzle=context['article'].pk).count()}
         context.update(count_of_likes)
+
         c_def = self.get_user_context(title=context['article'])
         return dict(list(context.items()) + list(c_def.items()))
 
@@ -113,15 +112,100 @@ class AddLike(LoginRequiredMixin, View):
         puzzles = Likes.objects.filter(puzzle=pk)
         puzzle = get_object_or_404(Puzzle, pk=pk)
 
-
-
         for user in puzzles:
             if user.user == request.user:
-                Likes.objects.filter(user=request.user, puzzle=pk).delete()
+                get_object_or_404(Likes, user=request.user, puzzle=pk).delete()
                 break
         else:
             Likes.objects.create(user=request.user, puzzle=puzzle)
 
-
-
         return redirect(reverse('article', args=[puzzle.slug]))
+
+
+# class AddFavorite(LoginRequiredMixin, View):
+#     model = Favorites
+#     template_name = 'blog/article.html'
+#     context_object_name = 'articles'
+#
+#     def post(self, request, pk, *args, **kwargs):
+#         puzzles = Favorites.objects.filter(puzzle=pk)
+#         puzzle = get_object_or_404(Puzzle, pk=pk)
+#
+#         for user in puzzles:
+#             if user.user == request.user:
+#                 get_object_or_404(Favorites, user=request.user, puzzle=pk).delete()
+#                 break
+#         else:
+#             Favorites.objects.create(user=request.user, puzzle=puzzle)
+#
+#         return redirect(reverse('article', args=[puzzle.slug]))
+#
+#
+# class ShowFavorite(DataMixin, ListView):
+#     paginate_by = 3
+#     model = Favorites
+#     template_name = 'blog/likes.html'
+#     context_object_name = 'articles'
+#     allow_empty = False
+#
+#     def get_queryset(self):
+#         return Favorites.objects.filter(user=self.request.user)
+#
+#     def get_context_data(self, *, object_list=None, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         c_def = self.get_user_context(title='Категорія - Улюблені', )
+#         return dict(list(context.items()) + list(c_def.items()))
+#
+#
+# class AddShare(LoginRequiredMixin, DataMixin, CreateView):
+#     model = Shares
+#     form_class = SharePuzzleForm
+#     template_name = 'blog/addshare.html'
+#     context_object_name = 'shares'
+#     success_url = reverse_lazy('home')
+#     login_url = reverse_lazy('home')
+#     raise_exception = True
+#     form_class.add_error('user2', {'user_is-not-valid': "Ви не можете радити собі статті"})
+#
+#     def get_context_data(self, *, object_list=None, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         c_def = self.get_user_context(title="Поділитись статтею")
+#         return dict(list(context.items()) + list(c_def.items()))
+#
+#     def form_valid(self, form):
+#         # print(type(form))
+#         # user1 = {'user1': self.request.user}
+#         new_share = form.save(commit=False)
+#         new_share.user1 = self.request.user
+#         form.clean_user2()
+#         #     raise ValidationError({
+#         #         'invalid_choice': "Ви не можете радити собі статті"
+#         #     })
+#
+#         # new_share.save()
+#         form.save()
+#         return redirect('add_share')
+#
+#
+# class ShowShare(DataMixin, ListView):
+#     paginate_by = 3
+#     model = Shares
+#     template_name = 'blog/shares.html'
+#     context_object_name = 'articles'
+#     allow_empty = False
+#
+#     def get_queryset(self):
+#         return Shares.objects.filter(user2=self.request.user)
+#
+#     def get_context_data(self, *, object_list=None, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         c_def = self.get_user_context(title='Категорія - Улюблені', )
+#         return dict(list(context.items()) + list(c_def.items()))
+#
+#
+# def pageNotFound(request, exception):
+#     return HttpResponseNotFound('<h1>Сторінка не знайдена</h1>')
+
+
+# def user_is_not_valid(form, request):
+#     if form.save
