@@ -1,0 +1,35 @@
+{% extends 'blog/index.html' %}
+{% load static %}
+{% block form %}
+<form method="post" action="{% url 'like' video.pk %}">
+              {% csrf_token %}
+              <div style="margin-top: 10px; width: 30px; height: 30px; margin-left: 950px;">
+                  <input type="hidden" name="text" value="{{ request.path }}">
+                  <button style="background: transparent; border: none; box-shadow: none;" type="submit">
+                      <img src="{% static 'images/like.png' %}">
+                      <span>{{ video.likes.all.count }}</span>
+                  </button>
+              </div>
+
+          </form>
+
+
+           <form method="post" action="{% url 'dislike' video.pk %}">
+              {% csrf_token %}
+              <div style="margin-top: -30px; width: 30px; height: 30px; margin-left: 980px;">
+                  <input type="hidden" name="text" value="{{ request.path }}">
+                  <button style="background: transparent; border: none; box-shadow: none;" type="submit">
+                     <img src="{% static 'images/dislike.png' %}">
+                      <span>{{ video.dislikes.all.count }}</span>
+                  </button>
+              </div>
+           </form>
+<form method="post">
+    {% csrf_token %}
+    {% if request.user.is_authenticated %}
+    <p class="link-read-post"><button type="submit"><img class= "like" src="{% static 'blog/images/4.png' %}"></button>: {{likes_count}}</p>
+    {% else %}
+    <p class="link-read-post"><img class= "like" src="{% static 'blog/images/4.png' %}">: {{likes_count}}</p>
+    {% endif %}
+</form>
+{% endblock %}
