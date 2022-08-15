@@ -48,3 +48,8 @@ class SharePuzzleForm(forms.ModelForm):
     class Meta:
         model = Shares
         fields = ('user1', 'user2', 'puzzle')
+        error_messages = {
+            NON_FIELD_ERRORS: {
+                'unique_together': "Ви вже порадили дану статтю цьому користувачу"
+            }
+        }

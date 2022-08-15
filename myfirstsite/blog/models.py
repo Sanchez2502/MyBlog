@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.core.exceptions import NON_FIELD_ERRORS
 from django.db import models
 from django.urls import reverse
 
@@ -51,12 +52,7 @@ class Likes(models.Model):
         verbose_name = 'Лайк'
         verbose_name_plural = 'Лайки'
         ordering = ['puzzle']
-
-    def save(self, *args, **kwargs):
-        if Likes.objects.filter(user=self.user, puzzle=self.puzzle):
-            return
-        else:
-            super().save(*args, **kwargs)
+        unique_together = ('user', 'puzzle',)
 
 
 class Favorites(models.Model):
@@ -66,16 +62,11 @@ class Favorites(models.Model):
     def str(self):
         return f'{self.user} : {self.puzzle}'
 
-    def save(self, *args, **kwargs):
-        if Favorites.objects.filter(user=self.user, puzzle=self.puzzle):
-            return
-        else:
-            super().save(*args, **kwargs)
-
     class Meta:
         verbose_name = 'Улюблене'
         verbose_name_plural = 'Улюблені'
         ordering = ['user']
+        unique_together = ('user', 'puzzle',)
 
 
 class Shares(models.Model):
@@ -90,10 +81,11 @@ class Shares(models.Model):
         verbose_name = 'Поширені'
         verbose_name_plural = 'Поширені'
         ordering = ['user2']
+        unique_together = ('user1', 'user2', 'puzzle',)
 
-    def save(self, *args, **kwargs):
-        if Shares.objects.filter(user1=self.user1, user2=self.user2, puzzle=self.puzzle):
-            return
-        else:
-            super().save(*args, **kwargs)
 
+    # def save(self, *args, **kwargs):
+    #     if Shares.objects.filter(user1=self.user1, user2=self.user2, puzzle=self.puzzle):
+    #         return
+    #     else:
+    #         super().save(*args, **kwargs)

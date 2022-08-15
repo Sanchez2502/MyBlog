@@ -198,9 +198,6 @@ class AddShare(LoginRequiredMixin, DataMixin, CreateView, ModelForm):
         if new_share.user2 == new_share.user1:
             form.add_error('user2', forms.ValidationError("Ви не можете радити собі статті"))
             return self.form_invalid(form)
-        if Shares.objects.filter(user1=new_share.user1, user2=new_share.user2, puzzle=new_share.puzzle):
-            form.add_error('', forms.ValidationError("Ви вже порадили дану статтю цьому користувачу"))
-            return self.form_invalid(form)
         new_share.save()
         return redirect('add_share')
 
