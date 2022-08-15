@@ -1,9 +1,11 @@
 {% extends 'blog/base.html' %}
+{% load static %}
+
 
 {% block content %}
 <ul class="list-articles">
 	{% for a in articles %}
-			<li><div class="article-panel">
+	<li><div class="article-panel">
 	<p class="first">Категорія: {{a.category}}</p>
 	<p class="last">Дата: {{a.time_update|date:"d-m-Y H:i:s"}}</p>
 </div>
@@ -11,13 +13,13 @@
 {% if a.photo %}
 	<p><img class="img-article-left thumb" src="{{a.photo.url}}"></p>
 {% endif %}
-				<h2>{{a.title}}</h2>
-				{% autoescape on %}
-				{{a.content|linebreaks|truncatewords:50}}
-				{% endautoescape %}
-			<div class="clear"></div>
-			<p class="link-read-post"><a href="{{ a.get_absolute_url }}">Читати статтю</a></p>
-			</li>
+		<h2>{{a.title}}</h2>
+		{% autoescape on %}
+		{{a.content|linebreaks|truncatewords:50}}
+		{% endautoescape %}
+		<div class="clear"></div>
+		<p class="link-read-post"><a href="{{ a.get_absolute_url }}">Читати статтю</a></p>
+	</li>
 	{% endfor %}
 </ul>
 {% endblock %}

@@ -18,6 +18,10 @@ a:hover {
 
 img {max-width: 600px; height: auto;}
 
+img.like {
+    background-color: #0000FF;
+}
+
 img.img-article-left {
 	max-width: 300px;
 	height: auto;
@@ -178,6 +182,7 @@ div.button {
 	margin: 30px 0 0 0;
 	color: #999;
 }
+
 .left-chapters ul li.selected {color: #0059b2; }
 .left-chapters ul li a {
 	color: #444;
@@ -195,14 +200,14 @@ div.button {
 .left-chapters ul li.share a.share-yt {
 	width: 100%;
 	height: 30px;
-	background: url('../images/share_yt.png') no-repeat 0 0
 }
 .left-chapters ul li.share a.share-yt:hover {
 	width: 100%;
 	height: 30px;
-	background: url('../images/share_yt.png') no-repeat 0 -30px
 }
 
+
+}
 .content {
 	padding: 40px 20px 20px 40px;
 	width: 100%;
@@ -347,7 +352,6 @@ ul.lang-list li a:hover {color: #fdc073;}
 .highlight .block p { margin: 0; }
 
 .quote {
-	background: url('../images/blockquote.png') no-repeat 0 10px;
 	padding: 5px 5px 5px 70px;
 	font-family: Sans-serif, Arial, Tahoma;
 	font-style: italic;

@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 
+
 class Puzzle(models.Model):
     name = models.CharField(max_length=255, verbose_name="Назва")
     slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name="URL")
@@ -39,16 +40,60 @@ class Category(models.Model):
         ordering = ['id']
 
 
-class Comments(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Автор")
-    text = models.TextField(blank=True, verbose_name="Текст коментаря")
-    time_create = models.DateTimeField(auto_now_add=True, verbose_name="Час останньої зміни")
+class Likes(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Користувач")
     puzzle = models.ForeignKey(Puzzle, on_delete=models.CASCADE, verbose_name="Стаття")
 
     def __str__(self):
-        return "{}".format(self.user)
+        return f'{self.user} : {self.puzzle}'
 
     class Meta:
-        verbose_name = 'Коментар'
-        verbose_name_plural = 'Коментарі'
-        ordering = ['id']
+        verbose_name = 'Лайк'
+        verbose_name_plural = 'Лайки'
+        ordering = ['puzzle']
+
+    def save(self, *args, **kwargs):
+        if Likes.objects.filter(user=self.user, puzzle=self.puzzle):
+            return
+        else:
+            super().save(*args, **kwargs)
+
+
+class Favorites(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Користувач")
+    puzzle = models.ForeignKey(Puzzle, on_delete=models.CASCADE, verbose_name="Стаття")
+
+    def str(self):
+        return f'{self.user} : {self.puzzle}'
+
+    def save(self, *args, **kwargs):
+        if Favorites.objects.filter(user=self.user, puzzle=self.puzzle):
+            return
+        else:
+            super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = 'Улюблене'
+        verbose_name_plural = 'Улюблені'
+        ordering = ['user']
+
+
+class Shares(models.Model):
+    user1 = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Відправник", related_name="Poster")
+    user2 = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Отримувач", related_name="Geter")
+    puzzle = models.ForeignKey(Puzzle, on_delete=models.CASCADE, verbose_name="Стаття")
+
+    def str(self):
+        return f'{self.user2} : {self.puzzle}'
+
+    class Meta:
+        verbose_name = 'Поширені'
+        verbose_name_plural = 'Поширені'
+        ordering = ['user2']
+
+    def save(self, *args, **kwargs):
+        if Shares.objects.filter(user1=self.user1, user2=self.user2, puzzle=self.puzzle):
+            return
+        else:
+            super().save(*args, **kwargs)
+
