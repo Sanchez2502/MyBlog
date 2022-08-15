@@ -61,10 +61,19 @@
 				</button>
 			</div>
 		</form>
-
-
-
 		{% endif %}
+		{% if request.user.is_authenticated %}
+		<form method="post">
+			{% csrf_token %}
+			<div>
+				<button style="background: transparent; border: none; box-shadow: none;" type="submit">
+					<input type="hidden" name="request" value="{{ request }}">
+					<li><a href="{% url 'share_show'%}">Мені порадили</a></li>
+				</button>
+			</div>
+		</form>
+		{% endif %}
+
 	</ul>
 </td>
 <!-- Конец Sidebar'а -->

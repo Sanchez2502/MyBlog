@@ -35,8 +35,14 @@ class FavoriteAdmin(admin.ModelAdmin):
     list_filter = ('user', 'puzzle',)
 
 
+class ShareAdmin(admin.ModelAdmin):
+    list_display = ('user1', 'user2', 'puzzle',)
+    autocomplete_fields = ('user1',)
+    list_display_links = ('user1', 'user2', 'puzzle',)
+
 
 admin.site.register(Puzzle, PuzzleAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Likes, LikeAdmin)
 admin.site.register(Favorites, FavoriteAdmin)
+admin.site.register(Shares, ShareAdmin)
