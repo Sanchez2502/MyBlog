@@ -11,8 +11,10 @@ urlpatterns = [
     path('article/<slug:article_slug>/', ShowArticle.as_view(), name='article'),
     path('category/<slug:category_slug>/', PuzzleCategory.as_view(), name='category'),
     path('addlike/<int:pk>/', AddLike.as_view(), name='add_like'),
+    path('removelike/<int:pk>/', RemoveLike.as_view(), name='remove_like'),
     path('favorite/', ShowFavorite.as_view(), name='favorite_show'),
-    path('favorite/<int:pk>/', AddFavorite.as_view(), name='favorite'),
+    path('addfavorite/<int:pk>/', AddFavorite.as_view(), name='add_favorite'),
+    path('removefavorite/<int:pk>/', RemoveFavorite.as_view(), name='remove_favorite'),
     path('addshare/', AddShare.as_view(), name='add_share'),
     path('share/', ShowShare.as_view(), name='share_show'),
 

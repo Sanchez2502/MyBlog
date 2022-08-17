@@ -49,10 +49,8 @@ class ShowArticle(DataMixin, DetailView):
         context = super().get_context_data(**kwargs)
         count_of_likes = {'count_of_likes': Likes.objects.filter(puzzle=context['article'].pk).count()}
         context.update(count_of_likes)
-
         c_def = self.get_user_context(title=context['article'])
         return dict(list(context.items()) + list(c_def.items()))
-
 
 class PuzzleCategory(DataMixin, ListView):
     model = Puzzle
@@ -110,36 +108,20 @@ class AddLike(LoginRequiredMixin, View):
     context_object_name = 'articles'
 
     def post(self, request, pk, *args, **kwargs):
-        puzzles = Likes.objects.filter(puzzle=pk)
         puzzle = get_object_or_404(Puzzle, pk=pk)
-
-        for user in puzzles:
-            if user.user == request.user:
-                get_object_or_404(Likes, user=request.user, puzzle=pk).delete()
-                # return redirect(reverse('article', args=[puzzle.slug]))
-                # self.delete(request,pk)
-                break
-        else:
-            Likes.objects.create(user=request.user, puzzle=puzzle)
+        Likes.objects.create(user=request.user, puzzle=puzzle)
         return redirect(reverse('article', args=[puzzle.slug]))
 
 
-# class RemoveLike(LoginRequiredMixin, View):
-#     model = Likes
-#     template_name = 'blog/article.html'
-#     context_object_name = 'articles'
-#
-#     def post(self, request, pk, *args, **kwargs):
-#         puzzles = Likes.objects.filter(puzzle=pk)
-#         puzzle = get_object_or_404(Puzzle, pk=pk)
-#
-#         for user in puzzles:
-#             if user.user == request.user:
-#                 get_object_or_404(Likes, user=request.user, puzzle=pk).delete()
-#                 break
-#         else:
-#             Likes.objects.create(user=request.user, puzzle=puzzle)
-#         return redirect(reverse('article', args=[puzzle.slug]))
+class RemoveLike(LoginRequiredMixin, View):
+    model = Likes
+    template_name = 'blog/article.html'
+    context_object_name = 'articles'
+
+    def post(self, request, pk, *args, **kwargs):
+        puzzle = get_object_or_404(Puzzle, pk=pk)
+        get_object_or_404(Likes, user=request.user, puzzle=pk).delete()
+        return redirect(reverse('article', args=[puzzle.slug]))
 
 
 class AddFavorite(LoginRequiredMixin, View):
@@ -148,15 +130,19 @@ class AddFavorite(LoginRequiredMixin, View):
     context_object_name = 'articles'
 
     def post(self, request, pk, *args, **kwargs):
-        puzzles = Favorites.objects.filter(puzzle=pk)
         puzzle = get_object_or_404(Puzzle, pk=pk)
+        Favorites.objects.create(user=request.user, puzzle=puzzle)
+        return redirect(reverse('article', args=[puzzle.slug]))
 
-        for user in puzzles:
-            if user.user == request.user:
-                get_object_or_404(Favorites, user=request.user, puzzle=pk).delete()
-                break
-        else:
-            Favorites.objects.create(user=request.user, puzzle=puzzle)
+
+class RemoveFavorite(LoginRequiredMixin, View):
+    model = Likes
+    template_name = 'blog/article.html'
+    context_object_name = 'articles'
+
+    def post(self, request, pk, *args, **kwargs):
+        puzzle = get_object_or_404(Puzzle, pk=pk)
+        get_object_or_404(Favorites, user=request.user, puzzle=pk).delete()
         return redirect(reverse('article', args=[puzzle.slug]))
 
 

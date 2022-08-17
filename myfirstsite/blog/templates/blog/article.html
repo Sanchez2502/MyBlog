@@ -2,7 +2,12 @@
 {% load static %}
 {% load my_tags %}
 
+
+
+
 {% block content %}
+{% is_like article request.user as liked %}
+{% is_favorite article request.user as favorited %}
 <h1>{{article.name}}</h1>
 
 {% if article.photo %}
@@ -12,23 +17,35 @@
 {{article.content|linebreaks}}
 
 {% if request.user.is_authenticated %}
-<form method="post" action="{% url 'add_like' article.pk %}">
-    {% csrf_token %}
-    <div>
-        <p class="link-read-post">
-            <button style="background: transparent; border: none; box-shadow: none;" type="submit">
-                <span><img src="{% static 'blog/images/like.png' %}"> : {{ count_of_likes }}</span>
-            </button>
+    {% if liked %}
+    <form method="post" action="{% url 'remove_like' article.pk %}">
+    {% else %}
+    <form method="post" action="{% url 'add_like' article.pk %}">
+    {% endif %}
 
-        </p>
-    </div>
-</form>
+        {% csrf_token %}
+        <div>
+            <p class="link-read-post">
+                <button style="background: transparent; border: none; box-shadow: none;" type="submit">
+                    <span><img src="{% static 'blog/images/like.png' %}"> : {{ count_of_likes }}</span>
+                </button>
+
+
+            </p>
+        </div>
+        </form>
 {% else %}
     <p class="link-read-post"><img src="{% static 'blog/images/like.png' %}">: {{count_of_likes}}</p>
 {% endif %}
 
+
 {% if request.user.is_authenticated %}
-<form method="post" action="{% url 'favorite' article.pk %}">
+    {% if favorited %}
+    <form method="post" action="{% url 'remove_favorite' article.pk %}">
+    {% else %}
+    <form method="post" action="{% url 'add_favorite' article.pk %}">
+    {% endif %}
+
     {% csrf_token %}
     <div>
         <p class="link-read-post">
