@@ -1,11 +1,64 @@
 {% extends 'blog/base.html' %}
+{% load static %}
+{% load my_tags %}
+
+
+
 
 {% block content %}
-<h1>{{article.title}}</h1>
+{% is_like article request.user as liked %}
+{% is_favorite article request.user as favorited %}
+<h1>{{article.name}}</h1>
 
 {% if article.photo %}
 <p><img class="img-article-left" src="{{article.photo.url}}"></p>
 {% endif %}
 
 {{article.content|linebreaks}}
+
+{% if request.user.is_authenticated %}
+    {% if liked %}
+    <form method="post" action="{% url 'remove_like' article.pk %}">
+    {% else %}
+    <form method="post" action="{% url 'add_like' article.pk %}">
+    {% endif %}
+
+        {% csrf_token %}
+        <div>
+            <p class="link-read-post">
+                <button style="background: transparent; border: none; box-shadow: none;" type="submit">
+                    <span><img src="{% static 'blog/images/like.png' %}"> : {{ count_of_likes }}</span>
+                </button>
+
+
+            </p>
+        </div>
+        </form>
+{% else %}
+    <p class="link-read-post"><img src="{% static 'blog/images/like.png' %}">: {{count_of_likes}}</p>
+{% endif %}
+
+
+{% if request.user.is_authenticated %}
+    {% if favorited %}
+    <form method="post" action="{% url 'remove_favorite' article.pk %}">
+    {% else %}
+    <form method="post" action="{% url 'add_favorite' article.pk %}">
+    {% endif %}
+
+    {% csrf_token %}
+    <div>
+        <p class="link-read-post">
+            <button style="background: transparent; border: none; box-shadow: none;" type="submit">
+                <span><img src="{% static 'blog/images/favourite.png' %}"></span>
+            </button>
+
+        </p>
+    </div>
+</form>
+{% else %}
+    <p class="link-read-post"><img src="{% static 'blog/images/favourite.png' %}"></p>
+{% endif %}
+
+
 {% endblock %}

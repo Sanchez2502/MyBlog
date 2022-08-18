@@ -1,9 +1,9 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
 from .models import *
+
 
 class CreateNewArticleForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -18,7 +18,7 @@ class CreateNewArticleForm(forms.ModelForm):
             'content': forms.Textarea(attrs={'cols': 100, 'rows': 20}),
         }
 
-    def clean_title(self):
+    def clean_name(self):
         name = self.cleaned_data['name']
         if len(name) > 50:
             raise ValidationError('Довжина перевищує 50 символів')
@@ -41,7 +41,15 @@ class UserLoginForm(AuthenticationForm):
     password = forms.CharField(label='Пароль', widget=forms.PasswordInput(attrs={'class': 'form-input'}))
 
 
-class CreateNewCommentForm(forms.ModelForm):
+class SharePuzzleForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     class Meta:
-        model = Comments
-        fields = ('text',)
+        model = Shares
+        fields = ('user1', 'user2', 'puzzle')
+        error_messages = {
+            NON_FIELD_ERRORS: {
+                'unique_together': "Ви вже порадили дану статтю цьому користувачу"
+            }
+        }
