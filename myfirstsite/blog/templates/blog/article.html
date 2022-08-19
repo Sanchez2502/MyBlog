@@ -6,6 +6,8 @@
 
 
 {% block content %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="{% static 'blog/js/main.js' %}"></script>
 {% is_like article request.user as liked %}
 {% is_favorite article request.user as favorited %}
 <h1>{{article.name}}</h1>
@@ -18,16 +20,18 @@
 
 {% if request.user.is_authenticated %}
     {% if liked %}
-    <form method="post" action="{% url 'remove_like' article.pk %}">
+    <form action="{% url 'remove_like' article.pk %}" id="form_removelike">
     {% else %}
-    <form method="post" action="{% url 'add_like' article.pk %}">
+    <form method="post" action="{% url 'add_like' article.pk %}" id="form_addlike">
     {% endif %}
 
         {% csrf_token %}
         <div>
             <p class="link-read-post">
-                <button style="background: transparent; border: none; box-shadow: none;" type="submit">
-                    <span><img src="{% static 'blog/images/like.png' %}"> : {{ count_of_likes }}</span>
+                <input type="hidden" id="idDelete" value="{{article.pk}}">
+                <input type="hidden" name="count_of_likes" value="{{count_of_likes}}">
+                <button style="background: transparent; border: none; box-shadow: none;" type="submit" id="change_count">
+                    <img src="{% static 'blog/images/like.png' %}"> : <span id="count_of_likes">{{ count_of_likes }}</span>
                 </button>
 
 
@@ -42,6 +46,7 @@
 {% if request.user.is_authenticated %}
     {% if favorited %}
     <form method="post" action="{% url 'remove_favorite' article.pk %}">
+
     {% else %}
     <form method="post" action="{% url 'add_favorite' article.pk %}">
     {% endif %}
@@ -59,6 +64,5 @@
 {% else %}
     <p class="link-read-post"><img src="{% static 'blog/images/favourite.png' %}"></p>
 {% endif %}
-
 
 {% endblock %}

@@ -1,12 +1,15 @@
+import simplejson
 from django.contrib.auth import logout, login
 from django.contrib.auth.views import LoginView
 from django.forms import ModelForm
-from django.http import HttpResponseNotFound
-from django.shortcuts import redirect, get_object_or_404
+from django.http import HttpResponseNotFound, JsonResponse, HttpResponse
+from django.shortcuts import redirect, get_object_or_404, render
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from rest_framework.views import APIView
+
 
 from .forms import *
 from .utils import *
@@ -51,6 +54,7 @@ class ShowArticle(DataMixin, DetailView):
         context.update(count_of_likes)
         c_def = self.get_user_context(title=context['article'])
         return dict(list(context.items()) + list(c_def.items()))
+
 
 class PuzzleCategory(DataMixin, ListView):
     model = Puzzle
@@ -102,26 +106,59 @@ def logout_user(request):
     return redirect('login')
 
 
-class AddLike(LoginRequiredMixin, View):
+# class AddLike(LoginRequiredMixin, View):
+#     model = Likes
+#     template_name = 'blog/article.html'
+#     context_object_name = 'articles'
+#
+#     def post(self, request, pk, *args, **kwargs):
+#         puzzle = get_object_or_404(Puzzle, pk=pk)
+#         Likes.objects.create(user=request.user, puzzle=puzzle)
+#         return redirect(reverse('article', args=[puzzle.slug]))
+#
+#
+# class RemoveLike(LoginRequiredMixin, View):
+#     model = Likes
+#     template_name = 'blog/article.html'
+#     context_object_name = 'articles'
+#
+#     def post(self, request, pk, *args, **kwargs):
+#         puzzle = get_object_or_404(Puzzle, pk=pk)
+#         get_object_or_404(Likes, user=request.user, puzzle=pk).delete()
+#         return redirect(reverse('article', args=[puzzle.slug]))
+
+
+class Like(APIView):
     model = Likes
     template_name = 'blog/article.html'
     context_object_name = 'articles'
 
-    def post(self, request, pk, *args, **kwargs):
+    def post(self, request, pk):
         puzzle = get_object_or_404(Puzzle, pk=pk)
         Likes.objects.create(user=request.user, puzzle=puzzle)
-        return redirect(reverse('article', args=[puzzle.slug]))
+        # count_of_likes = {'count_of_likes': Likes.objects.filter(puzzle=pk).count()}
+        # request.data['count_of_likes']=count_of_likes
+        results = {'count_of_likes': Likes.objects.filter(puzzle=pk).count()}
+        # json = simplejson.dumps(results)
+        return JsonResponse(results)
+        # request.update(count_of_likes)
+        # return render_to_response("count_of_likes: Likes.objects.filter(puzzle=pk).count()")
+        # return redirect(reverse('article', args=[puzzle.slug]))
+        # return JsonResponse({'count_of_likes': Likes.objects.filter(puzzle=pk).count()}) #redirect(reverse('article', args=[puzzle.slug]))
 
-
-class RemoveLike(LoginRequiredMixin, View):
-    model = Likes
-    template_name = 'blog/article.html'
-    context_object_name = 'articles'
-
-    def post(self, request, pk, *args, **kwargs):
+    def delete(self, request, pk, *args, **kwargs):
         puzzle = get_object_or_404(Puzzle, pk=pk)
         get_object_or_404(Likes, user=request.user, puzzle=pk).delete()
-        return redirect(reverse('article', args=[puzzle.slug]))
+        # count_of_likes = {'count_of_likes': Likes.objects.filter(puzzle=pk).count()}
+        # request.data['count_of_likes']=count_of_likes
+        # request.update(count_of_likes)
+        results = {'count_of_likes': Likes.objects.filter(puzzle=pk).count()}
+        # json = simplejson.dumps(results)
+        return JsonResponse(results)
+        # return redirect(reverse('article', args=[puzzle.slug]))
+        # return render(request, 'article.html')
+        # return JsonResponse({'status': 'Todo deleted!'})#redirect(reverse('article', args=[puzzle.slug]))
+        # return JsonResponse({'count_of_likes': Likes.objects.filter(puzzle=pk).count()})  # redirect(reverse('article', args=[puzzle.slug]))
 
 
 class AddFavorite(LoginRequiredMixin, View):
@@ -206,4 +243,3 @@ class ShowShare(DataMixin, ListView):
 
 def pageNotFound(request, exception):
     return HttpResponseNotFound('<h1>Сторінка не знайдена</h1>')
-
