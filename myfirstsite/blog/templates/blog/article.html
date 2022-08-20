@@ -19,18 +19,20 @@
 {{article.content|linebreaks}}
 
 {% if request.user.is_authenticated %}
+<div id="form">
     {% if liked %}
-    <form action="{% url 'remove_like' article.pk %}" id="form_removelike">
+    <form action="{% url 'like' article.pk %}" id="form_removelike">
     {% else %}
-    <form method="post" action="{% url 'add_like' article.pk %}" id="form_addlike">
+    <form method="post" action="{% url 'like' article.pk %}" id="form_addlike">
     {% endif %}
+</div>
+
 
         {% csrf_token %}
         <div>
             <p class="link-read-post">
                 <input type="hidden" id="idDelete" value="{{article.pk}}">
-                <input type="hidden" name="count_of_likes" value="{{count_of_likes}}">
-                <button style="background: transparent; border: none; box-shadow: none;" type="submit" id="change_count">
+                <button style="background: transparent; border: none; box-shadow: none;" type="submit" >
                     <img src="{% static 'blog/images/like.png' %}"> : <span id="count_of_likes">{{ count_of_likes }}</span>
                 </button>
 

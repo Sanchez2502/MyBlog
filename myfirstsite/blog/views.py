@@ -10,7 +10,6 @@ from django.views.generic import ListView, DetailView, CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from rest_framework.views import APIView
 
-
 from .forms import *
 from .utils import *
 
@@ -127,7 +126,6 @@ def logout_user(request):
 #         get_object_or_404(Likes, user=request.user, puzzle=pk).delete()
 #         return redirect(reverse('article', args=[puzzle.slug]))
 
-
 class Like(APIView):
     model = Likes
     template_name = 'blog/article.html'
@@ -136,29 +134,23 @@ class Like(APIView):
     def post(self, request, pk):
         puzzle = get_object_or_404(Puzzle, pk=pk)
         Likes.objects.create(user=request.user, puzzle=puzzle)
-        # count_of_likes = {'count_of_likes': Likes.objects.filter(puzzle=pk).count()}
-        # request.data['count_of_likes']=count_of_likes
-        results = {'count_of_likes': Likes.objects.filter(puzzle=pk).count()}
-        # json = simplejson.dumps(results)
+        action = request.path
+        id = "form_removelike"
+        form = f"<form action= {action} id={id}>"
+        results = {'count_of_likes': Likes.objects.filter(puzzle=pk).count(), 'form': form}
         return JsonResponse(results)
-        # request.update(count_of_likes)
-        # return render_to_response("count_of_likes: Likes.objects.filter(puzzle=pk).count()")
-        # return redirect(reverse('article', args=[puzzle.slug]))
-        # return JsonResponse({'count_of_likes': Likes.objects.filter(puzzle=pk).count()}) #redirect(reverse('article', args=[puzzle.slug]))
+        # return HttpResponse(request, 'blog/article.html', results)
 
     def delete(self, request, pk, *args, **kwargs):
         puzzle = get_object_or_404(Puzzle, pk=pk)
         get_object_or_404(Likes, user=request.user, puzzle=pk).delete()
-        # count_of_likes = {'count_of_likes': Likes.objects.filter(puzzle=pk).count()}
-        # request.data['count_of_likes']=count_of_likes
-        # request.update(count_of_likes)
-        results = {'count_of_likes': Likes.objects.filter(puzzle=pk).count()}
-        # json = simplejson.dumps(results)
+        method = "post"
+        action = request.path
+        id = "form_addlike"
+        form = f"<form method={method} action= '{action}' id={id}>"
+        results = {'count_of_likes': Likes.objects.filter(puzzle=pk).count(), 'form': form}
         return JsonResponse(results)
-        # return redirect(reverse('article', args=[puzzle.slug]))
-        # return render(request, 'article.html')
-        # return JsonResponse({'status': 'Todo deleted!'})#redirect(reverse('article', args=[puzzle.slug]))
-        # return JsonResponse({'count_of_likes': Likes.objects.filter(puzzle=pk).count()})  # redirect(reverse('article', args=[puzzle.slug]))
+        # return HttpResponse(request, 'blog/article.html', results)
 
 
 class AddFavorite(LoginRequiredMixin, View):
