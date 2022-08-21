@@ -131,24 +131,17 @@ class Like(APIView):
     template_name = 'blog/article.html'
     context_object_name = 'articles'
 
-    def post(self, request, pk):
+    def post(self, request, pk, *args, **kwargs):
         puzzle = get_object_or_404(Puzzle, pk=pk)
         Likes.objects.create(user=request.user, puzzle=puzzle)
-        action = request.path
-        id = "form_removelike"
-        form = f"<form action= {action} id={id}>"
-        results = {'count_of_likes': Likes.objects.filter(puzzle=pk).count(), 'form': form}
+        results = {'count_of_likes': Likes.objects.filter(puzzle=pk).count()}
         return JsonResponse(results)
         # return HttpResponse(request, 'blog/article.html', results)
 
     def delete(self, request, pk, *args, **kwargs):
         puzzle = get_object_or_404(Puzzle, pk=pk)
         get_object_or_404(Likes, user=request.user, puzzle=pk).delete()
-        method = "post"
-        action = request.path
-        id = "form_addlike"
-        form = f"<form method={method} action= '{action}' id={id}>"
-        results = {'count_of_likes': Likes.objects.filter(puzzle=pk).count(), 'form': form}
+        results = {'count_of_likes': Likes.objects.filter(puzzle=pk).count()}
         return JsonResponse(results)
         # return HttpResponse(request, 'blog/article.html', results)
 
